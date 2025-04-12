@@ -1,0 +1,95 @@
+
+<div class="container">
+  <mat-card>
+  <form [formGroup]="tripForm" (ngSubmit)="submit()" class="form-container">
+    <div formArrayName="trips">
+      <div
+        *ngFor="let group of tripsArray().controls; let i = index"
+        [formGroupName]="i"
+        class="trip-group"
+      >
+        <mat-form-field floatLabel="always" boxStyle appearance="outline">
+          <mat-label>Start</mat-label>
+          <input matInput formControlName="start" /> </mat-form-field
+        ><mat-form-field floatLabel="always" boxStyle appearance="outline">
+          <mat-label>End</mat-label>
+          <input matInput formControlName="end" />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="addTrip()"
+      >
+        Add Trip
+      </button>
+      <button mat-raised-button color="accent" type="submit">Submit</button>
+    </div>
+  </form>
+</mat-card>
+<div class="svg-container">
+  <svg [attr.width]="trips.length * 180" height="220">
+    <defs>
+      <marker
+        id="arrow"
+        viewBox="0 0 10 10"
+        refX="10"
+        refY="5"
+        markerWidth="6"
+        markerHeight="6"
+        orient="auto-start-reverse"
+      >
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="gray"></path>
+      </marker>
+    </defs>
+
+    <ng-container *ngFor="let trip of trips; let i = index">
+      <ng-container *ngIf="trip.start && trip.end">
+        <g
+          [attr.transform]="
+            'translate(' +
+            i * 160 +
+            ', ' +
+            (getLevel(i) === 2 ? 150 : 100) +
+            ')'
+          "
+        >
+          <circle
+            r="6"
+            cx="0"
+            cy="0"
+            [attr.fill]="getLevel(i) === 2 ? '#fbc02d' : '#3f51b5'"
+          ></circle>
+          <text
+            x="0"
+            y="-10"
+            font-size="12"
+            [attr.fill]="getLevel(i) === 2 ? '#fbc02d' : '#3f51b5'"
+          >
+            {{ trip.start.substring(0, 3).toUpperCase() }} -
+            {{ trip.end.substring(0, 3).toUpperCase() }}
+          </text>
+
+          <path
+            *ngIf="i < trips.length - 1"
+            [attr.d]="
+              getLevel(i + 1) === 2
+                ? 'M0 0 C 40 -40, 120 -40, 160 0'
+                : getLevel(i + 1) === 1 && trip.end === trips[i + 1].start
+                ? 'M0 0 L 160 0'
+                : 'M0 0 C 40 40, 120 40, 160 0'
+            "
+            stroke="#aaa"
+            stroke-width="2"
+            fill="none"
+            marker-end="url(#arrow)"
+          />
+        </g>
+      </ng-container>
+    </ng-container>
+  </svg>
+</div>
+</div>
